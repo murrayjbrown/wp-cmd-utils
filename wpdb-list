@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# wpdb-churl - List Wordpress sites in database
+#
+# Synopsis: wpdb-list <db-name>
+#
+# Input:  stdin  - MySQL user information
+#                - database content
+# Output: stdout - site prefixes
+#
+# Author: Murray J. Brown <mjb@mjbrown.com>
+# License: GPLv2
+#
+
+# include utility functions
+source wpdb_functions.sh
+
+#
+# Parse options
+#
+#-- database name
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-list <db-name> <site-prefix>";
+    exit 1;
+fi
+DbName="$1";
+
+# Get database authentication info
+wpdb_credentials $DbName;
+
+#
+# Query site options table
+#
+tableSuffix=$DbPrefix"options"
+#
+echo "show tables;" | /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName | grep "$tableSuffix" | cut --delim="$DbPrefix" --fields="1"

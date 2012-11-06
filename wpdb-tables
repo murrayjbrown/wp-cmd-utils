@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+# wpdb-tables - list database tables for Wordpress site
+#
+# Synopsis: wpdb-tables <db-name> <site-prefix>
+#
+# Input:  stdin  - MySQL user information
+# InOut:  MySQL  - database content
+#
+# Note: Underscore delimiter appended to prefixes.
+#
+# Author: Murray J. Brown <mjb@mjbrown.com>
+# License: GPLv2
+#
+
+# include utility functions
+source wpdb_functions.sh
+
+#
+# Parse options
+#
+#-- database name
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-tables <db-name> <site-prefix>";
+    exit 1;
+fi
+DbName="$1";
+
+#-- site prefix
+if [ "" == "$2" ]; then
+    echo "Usage: wpdb-tables <db-name> <site-prefix>";
+    exit 1;
+fi
+sitePrefix="$2";
+ 
+# Get database authentication info
+wpdb_credentials $DbName;
+
+# Enumerate tables for existing site
+unset DbTables;
+wpdb_enum_tables $sitePrefix$DbPrefix;
+
+if [ 0 -ge ${#DbTables[@]} ]; then
+    echo "Usage: wpdb-tables: database tables not found for site prefix - " $sitePrefix;
+    exit 1;
+fi
+
+#
+# List database tables with matching site prefix
+#
+query="";
+for tableName in ${DbTables[@]}; do
+    echo "$tableName";
+done;
+

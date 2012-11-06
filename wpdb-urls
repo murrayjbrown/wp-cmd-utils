@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+# wpdb-churl - Show/Set URL(s) for Wordpress site
+#
+# Synopsis: wpdb-churl <db_name> <site_prefix> [<site-url> [<home-url>]]
+#
+# Input:  stdin  - MySQL user information
+#                - database table dump file
+# Output: MySQL  - database content
+#
+# Note: Wordpress [home] defaults to be same as for [siteurl]:
+#       http://<site_host>/ (i.e., with only '/' as path-spec)
+#
+# Author: Murray J. Brown <mjb@mjbrown.com>
+# License: GPLv2
+#
+
+# include utility functions
+source wpdb_functions.sh
+
+DbUser=root
+DbPass=
+DbName=
+WpSite=
+
+#
+# Parse options
+#
+#-- database name
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-churl <db_name> <site_prefix> [<site_url> [<home-url>]]";
+    exit 1;
+fi
+DbName="$1";
+
+#-- site prefix
+if [ "" == "$2" ]; then
+    echo "Usage: wpdb-churl <db_name> <site_prefix> [<site_url> [<home-url>]]";
+    exit 1;
+fi
+sitePrefix="$2$DbPrefix";
+
+# Get database authentication info
+wpdb_credentials $DbName;
+dbTable=$DbName'.'$sitePrefix'options';
+
+#-- site url 
+if [ "" == "$3" ]; then
+    #
+    # Query site URLs in database
+    #
+    echo -n "siteurl ";
+    /usr/bin/mysql --user=$DbUser --password=$DbPass <<EOF_QUERY_SITEURL
+SELECT option_value FROM $dbTable WHERE option_name = 'siteurl';
+EOF_QUERY_SITEURL
+    echo "";
+    echo -n "home ";
+    /usr/bin/mysql --user=$DbUser --password=$DbPass <<EOF_QUERY_HOME
+SELECT option_value FROM $dbTable WHERE option_name = 'home';
+EOF_QUERY_HOME
+
+else
+    #
+    #
+    # Update site URLs in database
+    #
+    siteUrl="$3";
+    homeUrl=$siteUrl;
+    if [ "" != "$4" ]; then
+        homeUrl="$4";
+    fi
+    #
+    /usr/bin/mysql --user=$DbUser --password=$DbPass <<EOF_UPDATE_OPTIONS
+UPDATE $dbTable SET option_value = '$siteUrl' WHERE option_name = 'siteurl';
+UPDATE $dbTable SET option_value = '$homeUrl' WHERE option_name = 'home';
+EOF_UPDATE_OPTIONS
+
+fi

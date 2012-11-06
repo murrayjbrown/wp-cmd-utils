@@ -1,0 +1,81 @@
+#!/bin/bash
+#
+# wpdb-move - Move/rename database tables for Wordpress site
+#
+# Synopsis: wpdb-move <db-name> <old-site-prefix> <new-site-prefix>
+#
+# Input:  stdin  - MySQL user information
+# InOut:  MySQL  - database content
+#
+# Note: Dollar-sign delimiter appended to prefixes.
+#
+# Author: Murray J. Brown <mjb@mjbrown.com>
+# License: GPLv2
+#
+
+# include utility functions
+source wpdb_functions.sh
+
+#
+# Parse options
+#
+#-- database name
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-move <db-name> <old-site-prefix> <new-site-prefix>";
+    exit 1;
+fi
+DbName="$1";
+
+#-- old site prefix
+if [ "" == "$2" ]; then
+    echo "Usage: wpdb-move <db-name> <old-site-prefix> <new-site-prefix>";
+    exit 1;
+fi
+oldPrefix="$2$DbPrefix";
+ 
+#-- new site prefix
+if [ "" == "$3" ]; then
+    echo "Usage: wpdb-move <db-name> <old-site-prefix> <new-site-prefix>";
+    exit 1;
+fi
+newPrefix="$3$DbPrefix";
+ 
+# Get database authentication info
+wpdb_credentials $DbName;
+
+# Enumerate tables for existing site
+unset DbTables;
+wpdb_enum_tables $oldPrefix;
+
+if [ 0 -ge ${#DbTables[@]} ]; then
+    echo "Usage: wpdb-move: database tables not found for site prefix - " $oldPrefix;
+    exit 1;
+fi
+
+#
+# Prepare table rename SQL query to rename tables
+#
+query_rename="";
+for tableName in ${DbTables[@]}; do
+    if [ "$oldPrefix" == "${tableName:0:${#oldPrefix}}" ]; then
+        newTableName=$newPrefix${tableName:${#oldPrefix}};
+        query_rename+="ALTER TABLE $tableName RENAME TO $newTableName;";
+    fi
+done;
+
+#
+# Rename database tables
+#
+#echo $query_rename;
+/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query_rename;
+
+#
+# Update metadata to refer to new site name
+#
+query_newmeta="UPDATE $oldPrefix";
+query_newmeta+="usermeta SET 'meta_key' = REPLACE( 'meta_key', '$oldPrefix', '$newPrefix' );";
+
+#echo "query_newmeta: $query_newmeta";
+/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query_newmeta;
+
+exit;

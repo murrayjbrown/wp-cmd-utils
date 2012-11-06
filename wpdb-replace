@@ -1,0 +1,86 @@
+#!/bin/bash
+#
+# wpdb-replace - replace string in database tables for Wordpress site
+#
+# Synopsis: wpdb-replace <db-name> <site-prefix> <original-string> <replacement-string>
+#
+# Input:  stdin  - MySQL user information
+# InOut:  MySQL  - database content
+#
+# Note: Underscore delimiter appended to prefixes.
+#
+# Author: Murray J. Brown <mjb@mjbrown.com>
+# License: GPLv2
+#
+
+# include utility functions
+source wpdb_functions.sh
+
+#
+# Parse options
+#
+#-- database name
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-replace <db-name> <site-prefix> <original-string> <replacement-string>";
+    exit 1;
+fi
+DbName="$1";
+
+#-- site prefix
+if [ "" == "$2" ]; then
+    echo "Usage: wpdb-replace <db-name> <site-prefix> <original-string> <replacement-string>";
+    exit 1;
+fi
+sitePrefix="$2$DbPrefix";
+ 
+#-- search string
+if [ "" == "$3" ]; then
+    echo "Usage: wpdb-replace <db-name> <site-prefix> <original-string> <replacement-string>";
+    exit 1;
+fi
+origString="$3";
+ 
+#-- replacement string
+if [ "" == "$4" ]; then
+    echo "Usage: wpdb-replace <db-name> <site-prefix> <original-string> <replacement-string>";
+    exit 1;
+fi
+replString="$4";
+ 
+#echo "dbname: $DbName"
+#echo "prefix: $sitePrefix"
+#echo "search: $origString"
+#echo "replace: $replString"
+
+# Get database authentication info
+wpdb_credentials $DbName;
+
+# Enumerate tables for site
+unset DbTables;
+wpdb_enum_tables $sitePrefix;
+
+if [ 0 -ge ${#DbTables[@]} ]; then
+    echo "Usage: wpdb-replace: database tables not found for site prefix - " $sitePrefix;
+    exit 1;
+fi
+
+#
+# Export environment variables
+#
+export DbName
+export DbUser
+export DbPass
+export DbTabs=${DbTables[@]}
+
+#
+# Invoke PHP script for string substitution
+#
+wpdb_replace.php $origString $replString
+
+#
+# Unset exported environment variables
+#
+unset DbName
+unset DbUser
+unset DbPass
+unset DbTabs

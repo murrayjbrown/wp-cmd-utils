@@ -1,0 +1,65 @@
+#!/bin/bash
+#
+# wpdb-delete - Remove database tables for Wordpress site
+#
+# Synopsis: wpdb-mvtables <db-name> <site-prefix>
+#
+# Input:  stdin  - MySQL user information
+# InOut:  MySQL  - database content
+#
+# Note: Underscore delimiter appended to prefix.
+#
+# Author: Murray J. Brown <mjb@mjbrown.com>
+# License: GPLv2
+#
+
+# include utility functions
+source wpdb_functions.sh
+
+#
+# Parse options
+#
+#-- database name
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-delete <db-name> <site-prefix>";
+    exit 1;
+fi
+DbName="$1";
+
+#-- site prefix
+if [ "" == "$2" ]; then
+    echo "Usage: wpdb-delete <db-name> <site-prefix>";
+    exit 1;
+fi
+prefix="$2$DbPrefix";
+ 
+# Get database authentication info
+wpdb_credentials $DbName;
+
+# Enumerate tables for existing site
+unset DbTables;
+wpdb_enum_tables $prefix;
+
+if [ 0 -ge ${#DbTables[@]} ]; then
+    echo "Usage: wpdb-delete: database tables not found for site prefix - " $prefix;
+    exit 1;
+fi
+
+#
+# Prepare table rename SQL query to rename tables
+#
+query="";
+for tableName in ${DbTables[@]}; do
+    if [ "$prefix" == "${tableName:0:${#prefix}}" ]; then
+        query+="DROP TABLE $tableName;";
+    fi
+done;
+
+# replace end comma with semicolon (for compound clause query)
+#query="${query:0:${#query}-1};";
+
+#
+# Rename database tables
+#
+#echo $query;
+/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query;

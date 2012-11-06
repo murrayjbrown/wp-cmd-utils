@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# wpdb-import - Wordpress database import tool
+#
+# Synopsis: wpdb-import <db-name> <site-prefix>
+#
+# Input:  stdin  - MySQL user information
+#                - database SQL table dump file
+#                  named <site-prefix>.sql
+# Output: MySQL  - database content
+#
+# Note: MySQL database is presumed to exist already;
+#       otherwise a fatal error will be generated.
+#       Site-prefixed tables are assumed not to exist;
+#       otherwise a fatal error will be generated.
+#
+# Author: Murray J. Brown <mjb@mjbrown.com>
+# License: GPLv2
+#
+
+# include utility functions
+source wpdb_functions.sh
+
+#
+# Parse options
+#
+#-- database name
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-import <db-name> <site-prefix>";
+    exit 1;
+fi
+DbName="$1";
+#-- database dump file to import
+if [ "" == "$2" ]; then
+    echo "Usage: wpdb-import <db-name> <site-prefix>";
+    exit 1;
+fi
+sitePrefix="$2$DbPrefix";
+
+# Get database authentication info
+wpdb_credentials $DbName;
+
+#
+# Import MySQL database dumpfile into named database
+#
+/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <$sitePrefix.sql
+
