@@ -19,6 +19,7 @@ the administration of Wordpress databases and site document files
 
 - license.txt         - Full text of GPL Version 2 license 
 - README.txt          - This file
+- wpdb-copy           - Copy existing Wordpress site tables for a new site
 - wpdb-delete         - Delete Wordpress site tables from database
 - wpdb-export         - Export Wordpress site tables into SQL dump file
 - wpdb_functions.sh   - Common utility functions used by scripts
@@ -29,6 +30,6 @@ the administration of Wordpress databases and site document files
 - wpdb_replace.php    - Utility functions called by wpdb-replace script
 - wpdb-tables         - List all tables for a Wordpress site in database
 - wpdb-urls           - List/edit HOME & SITEURL fields wor Wordpress site
-- wp-protect          - Set protective permissions on Wordpress files
-- wp-unprotect        - Unset protective permissions on Wordpress files
+- wp-protect          - Set protective attributes & permissions on Wordpress files
+- wp-unprotect        - Unset protective attributes & permissions on Wordpress files
  

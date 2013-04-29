@@ -7,7 +7,7 @@
 # Input:  stdin  - MySQL user information
 # InOut:  MySQL  - database content
 #
-# Note: Dollar-sign delimiter appended to prefixes.
+# Note: An underscore )'_') delimiter is appended to prefixes.
 #
 # Author: Murray J. Brown <mjb@mjbrown.com>
 # License: GPLv2
@@ -31,24 +31,26 @@ if [ "" == "$2" ]; then
     echo "Usage: wpdb-move <db-name> <old-site-prefix> <new-site-prefix>";
     exit 1;
 fi
-oldPrefix="$2$DbPrefDelim";
+oldSitePrefix="$2";
+oldTablePrefix="$oldSitePrefix$DbPrefDelim";
  
 #-- new site prefix
 if [ "" == "$3" ]; then
     echo "Usage: wpdb-move <db-name> <old-site-prefix> <new-site-prefix>";
     exit 1;
 fi
-newPrefix="$3$DbPrefDelim";
+newSitePrefix="$3";
+newTablePrefix="$newSitePrefix$DbPrefDelim";
  
 # Get database authentication info
 wpdb_credentials $DbName;
 
 # Enumerate tables for existing site
 unset DbTables;
-wpdb_enum_tables $oldPrefix;
+wpdb_enum_tables $oldTablePrefix;
 
 if [ 0 -ge ${#DbTables[@]} ]; then
-    echo "Usage: wpdb-move: database tables not found for site prefix - " $oldPrefix;
+    echo "Usage: wpdb-move: database tables not found for site prefix - " $oldSitePrefix;
     exit 1;
 fi
 
@@ -57,8 +59,8 @@ fi
 #
 query_rename="";
 for tableName in ${DbTables[@]}; do
-    if [ "$oldPrefix" == "${tableName:0:${#oldPrefix}}" ]; then
-        newTableName=$newPrefix${tableName:${#oldPrefix}};
+    if [ "$oldTablePrefix" == "${tableName:0:${#oldTablePrefix}}" ]; then
+        newTableName=$newTablePrefix${tableName:${#oldTablePrefix}};
         query_rename+="ALTER TABLE $tableName RENAME TO $newTableName;";
     fi
 done;
@@ -66,16 +68,13 @@ done;
 #
 # Rename database tables
 #
-#echo $query_rename;
 /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query_rename;
 
 #
 # Update metadata to refer to new site name
 #
-query_newmeta="UPDATE $oldPrefix";
-query_newmeta+="usermeta SET 'meta_key' = REPLACE( 'meta_key', '$oldPrefix', '$newPrefix' );";
+query_newmeta="UPDATE $oldTablePrefix";
+query_newmeta+="usermeta SET meta_key = REPLACE(meta_key, '$oldTablePrefix', '$newTablePrefix');";
 
-#echo "query_newmeta: $query_newmeta";
 /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query_newmeta;
 
-exit;

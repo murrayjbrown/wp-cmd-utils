@@ -1,0 +1,101 @@
+#!/bin/bash
+#
+# wpdb-copy - Copy database tables for Wordpress site
+#
+# Synopsis: wpdb-copy <db-name> <old-site-prefix> <new-site-prefix>
+#
+# Input:  stdin  - MySQL user information
+# InOut:  MySQL  - database content
+#
+# Note: An underscore ('_') delimiter is appended to prefixes.
+#
+# Author: Murray J. Brown <mjb@mjbrown.com>
+# License: GPLv2
+#
+
+# include utility functions
+source wpdb_functions.sh
+
+#
+# Parse options
+#
+#-- database name
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-copy <db-name> <old-site-prefix> <new-site-prefix>";
+    exit 1;
+fi
+DbName="$1";
+
+#-- old site prefix
+if [ "" == "$2" ]; then
+    echo "Usage: wpdb-copy <db-name> <old-site-prefix> <new-site-prefix>";
+    exit 1;
+fi
+oldSitePrefix="$2";
+oldTablePrefix="$oldSitePrefix$DbPrefDelim";
+ 
+#-- new site prefix
+if [ "" == "$3" ]; then
+    echo "Usage: wpdb-copy <db-name> <old-site-prefix> <new-site-prefix>";
+    exit 1;
+fi
+newSitePrefix="$3";
+newTablePrefix="$newSitePrefix$DbPrefDelim";
+ 
+# Get database authentication info
+wpdb_credentials $DbName;
+
+# Enumerate tables for new site
+unset DbTables;
+wpdb_enum_tables $newTablePrefix;
+
+if [ "" != "$DbTables" ]; then
+    echo "Usage: wpdb-copy: database tables already exist for site prefix - "$newSitePrefix;
+    exit 1;
+fi
+
+# Enumerate tables for existing site
+unset DbTables;
+wpdb_enum_tables $oldTablePrefix;
+
+if [ 0 -ge ${#DbTables[@]} ]; then
+    echo "Usage: wpdb-copy: database tables not found for site prefix - " $oldSitePrefix;
+    exit 1;
+fi
+
+#
+# Prepare SQL query to create new tables
+#
+query_create="";
+for tableName in ${DbTables[@]}; do
+    if [ "$oldTablePrefix" == "${tableName:0:${#oldTablePrefix}}" ]; then
+        newTableName=$newTablePrefix${tableName:${#oldTablePrefix}};
+        query_create+="CREATE TABLE $newTableName LIKE $tableName;";
+    fi
+done;
+
+#
+# Prepare SQL query to insert records from old into new table
+#
+query_insert="";
+for tableName in ${DbTables[@]}; do
+    if [ "$oldTablePrefix" == "${tableName:0:${#oldTablePrefix}}" ]; then
+        newTableName=$newTablePrefix${tableName:${#oldTablePrefix}};
+        query_insert+="INSERT $newTableName SELECT * FROM $tableName;";
+    fi
+done;
+
+#
+# Create new database tables and copy (insert) records from old tables
+#
+/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query_create;
+/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query_insert;
+
+#
+# Update new metadata to refer to new site name
+#
+query_newmeta="UPDATE $newTablePrefix";
+query_newmeta+="usermeta SET meta_key = REPLACE(meta_key, '$oldTablePrefix', '$newTablePrefix');";
+
+/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query_newmeta;
+
