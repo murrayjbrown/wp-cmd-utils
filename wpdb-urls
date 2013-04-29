@@ -1,15 +1,16 @@
 #!/bin/bash
 #
-# wpdb-churl - Show/Set URL(s) for Wordpress site
+# wpdb-urls - Show/Set URL(s) for Wordpress site
 #
-# Synopsis: wpdb-churl <db_name> <site_prefix> [<site-url> [<home-url>]]
+# Synopsis: wpdb-urls <db_name> <site_prefix> [<site-url> [<home-url>]]
 #
 # Input:  stdin  - MySQL user information
 #                - database table dump file
 # Output: MySQL  - database content
 #
-# Note: Wordpress [home] defaults to be same as for [siteurl]:
-#       http://<site_host>/ (i.e., with only '/' as path-spec)
+# Note: URLs must be given with http or https protocol, and '/' path specifiers:
+#			http://<site_host>/ 
+#		The [home] URL defaults to be same as for [siteurl]:
 #
 # Author: Murray J. Brown <mjb@mjbrown.com>
 # License: GPLv2
@@ -28,14 +29,14 @@ WpSite=
 #
 #-- database name
 if [ "" == "$1" ]; then
-    echo "Usage: wpdb-churl <db_name> <site_prefix> [<site_url> [<home-url>]]";
+    echo "Usage: wpdb-urls <db_name> <site_prefix> [<site_url> [<home-url>]]";
     exit 1;
 fi
 DbName="$1";
 
 #-- site prefix
 if [ "" == "$2" ]; then
-    echo "Usage: wpdb-churl <db_name> <site_prefix> [<site_url> [<home-url>]]";
+    echo "Usage: wpdb-urls <db_name> <site_prefix> [<site_url> [<home-url>]]";
     exit 1;
 fi
 sitePrefix="$2$DbPrefDelim";
