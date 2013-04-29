@@ -38,7 +38,7 @@ if [ "" == "$2" ]; then
     echo "Usage: wpdb-churl <db_name> <site_prefix> [<site_url> [<home-url>]]";
     exit 1;
 fi
-sitePrefix="$2$DbPrefix";
+sitePrefix="$2$DbPrefDelim";
 
 # Get database authentication info
 wpdb_credentials $DbName;

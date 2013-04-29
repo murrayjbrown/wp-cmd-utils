@@ -2,7 +2,7 @@
 #
 # wpdb-churl - List Wordpress sites in database
 #
-# Synopsis: wpdb-list <db-name>
+# Synopsis: wpdb-list <db-name> [<site-prefix>]
 #
 # Input:  stdin  - MySQL user information
 #                - database content
@@ -20,17 +20,20 @@ source wpdb_functions.sh
 #
 #-- database name
 if [ "" == "$1" ]; then
-    echo "Usage: wpdb-list <db-name> <site-prefix>";
+    echo "Usage: wpdb-list <db-name>";
     exit 1;
 fi
 DbName="$1";
-
+sitePrefix="";
+if [ "" != "$2" ]; then
+	sitePrefix="$2";
+fi
 # Get database authentication info
 wpdb_credentials $DbName;
 
 #
-# Query site options table
+# Query site-unique table
 #
-tableSuffix=$DbPrefix"options"
+tableName=$sitePrefix$DbPrefDelim"sitemeta"
 #
-echo "show tables;" | /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName | grep "$tableSuffix" | cut --delim="$DbPrefix" --fields="1"
+echo "show tables;" | /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName | grep "$tableName" | cut --delim="$DbPrefDelim" --fields="1"

@@ -1,21 +1,23 @@
 #!/bin/bash
 #
-# wp-protect - Set permissions to unprotect Wordpress site files
-#               (i.e., enable updates to core/plugins/themes)
+# wp-unprotect - Set attributes & permissions to unprotect Wordpress site files
+#                (i.e., enable updates to core/plugins/themes)
 #
 # Author: Murray J. Brown <mjb@mjbrown.com>
 # License: GPLv2
 #
 
 # Set wordpress directory
-if ( -d "./public_html" )l then 
-    wpdir=$HOME/public_html
-elif [ "" == "$1" ]; then
-    wpdir=".";
-else
+wpdir=$HOME/public_html
+if [ "" != "$1" ]; then
     wpdir="$1";
 fi
 
+# Set all files mutable
+find $wpdir \
+    -exec chattr -i {} \;
+
 # Set user write permissions on all files
 chmod -R u=rwX,go=rX $wpdir
+
 

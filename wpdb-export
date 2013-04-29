@@ -16,6 +16,10 @@
 # include utility functions
 source wpdb_functions.sh
 
+
+# Set dumptime
+dumpTime=`/bin/date "+%Y-%m%d-%H%M"`;
+
 #
 # Parse options
 #
@@ -31,7 +35,7 @@ if [ "" == "$2" ]; then
     echo "Usage: wpdb-export <db-name> <site-prefix>";
     exit 1;
 fi
-sitePrefix="$2$DbPrefix";
+sitePrefix="$2$DbPrefDelim";
 
 if [ -f $sitePrefix.sql ]; then
     echo "Error: wpdb-export: dump file already exists -" $sitePrefix".sql";
@@ -54,6 +58,6 @@ fi
 # Dump tables with given site prefix from named database
 #
 for tableName in ${DbTables[@]}; do
-    /usr/bin/mysqldump --user=$DbUser --password=$DbPass $DbName $tableName >>$sitePrefix.sql
+    /usr/bin/mysqldump --user=$DbUser --password=$DbPass $DbName $tableName >>$sitePrefix$dumpTime.sql;
 done;
 

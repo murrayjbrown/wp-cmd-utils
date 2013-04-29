@@ -7,7 +7,7 @@
 # Input:  stdin  - MySQL user information
 # InOut:  MySQL  - database content
 #
-# Note: Underscore delimiter appended to prefix.
+# Note: An underscore ('_') delimiter is appended to site prefix.
 #
 # Author: Murray J. Brown <mjb@mjbrown.com>
 # License: GPLv2
@@ -31,35 +31,37 @@ if [ "" == "$2" ]; then
     echo "Usage: wpdb-delete <db-name> <site-prefix>";
     exit 1;
 fi
-prefix="$2$DbPrefix";
+sitePrefix="$2";
  
 # Get database authentication info
 wpdb_credentials $DbName;
 
 # Enumerate tables for existing site
 unset DbTables;
-wpdb_enum_tables $prefix;
+wpdb_enum_tables $sitePrefix$dbPrefDelim;
 
 if [ 0 -ge ${#DbTables[@]} ]; then
-    echo "Usage: wpdb-delete: database tables not found for site prefix - " $prefix;
+    echo "Usage: wpdb-delete: database tables not found for site prefix - " $sitePrefix;
     exit 1;
 fi
 
-#
-# Prepare table rename SQL query to rename tables
-#
-query="";
-for tableName in ${DbTables[@]}; do
-    if [ "$prefix" == "${tableName:0:${#prefix}}" ]; then
-        query+="DROP TABLE $tableName;";
-    fi
-done;
-
-# replace end comma with semicolon (for compound clause query)
-#query="${query:0:${#query}-1};";
-
-#
-# Rename database tables
-#
-#echo $query;
-/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query;
+# Prompt user for confirmation
+echo "";
+read  -p "Confirm site removal: [yes/NO]: " answer; 
+echo "";
+answer=`echo "$answer" | /usr/bin/tr [A-Z] [a-z]`
+if [ "yes" == "$answer" ]; then
+	#
+	# Prepare SQL query to drop tables
+	#
+	query="";
+	for tableName in ${DbTables[@]}; do
+	    if [ "$prefix" == "${tableName:0:${#prefix}}" ]; then
+	        query+="DROP TABLE $tableName;";
+	    fi
+	done;
+	#
+	# Drop MySQL database tables for site
+	#
+	/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query;
+fi

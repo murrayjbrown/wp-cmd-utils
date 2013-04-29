@@ -31,7 +31,7 @@ if [ "" == "$2" ]; then
     echo "Usage: wpdb-replace <db-name> <site-prefix> <original-string> <replacement-string>";
     exit 1;
 fi
-sitePrefix="$2$DbPrefix";
+sitePrefix="$2";
  
 #-- search string
 if [ "" == "$3" ]; then
@@ -57,25 +57,32 @@ wpdb_credentials $DbName;
 
 # Enumerate tables for site
 unset DbTables;
-wpdb_enum_tables $sitePrefix;
+wpdb_enum_tables $sitePrefix$DbPrefDelim;
 
 if [ 0 -ge ${#DbTables[@]} ]; then
     echo "Usage: wpdb-replace: database tables not found for site prefix - " $sitePrefix;
     exit 1;
 fi
 
-#
-# Export environment variables
-#
-export DbName
-export DbUser
-export DbPass
-export DbTabs=${DbTables[@]}
+# Prompt user for confirmation
+echo "";
+read  -p "Confirm site import: [yes/NO]: " answer; 
+echo "";
+answer=`echo "$answer" | /usr/bin/tr [A-Z] [a-z]`
+if [ "yes" == "$answer" ]; then
+	#
+	# Export environment variables
+	#
+	export DbName
+	export DbUser
+	export DbPass
+	export DbTabs=${DbTables[@]}
 
-#
-# Invoke PHP script for string substitution
-#
-wpdb_replace.php $origString $replString
+	#
+	# Invoke PHP script for string substitution
+	#
+	wpdb_replace.php $origString $replString
+fi
 
 #
 # Unset exported environment variables

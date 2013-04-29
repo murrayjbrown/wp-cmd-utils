@@ -38,7 +38,7 @@ wpdb_credentials $DbName;
 
 # Enumerate tables for existing site
 unset DbTables;
-wpdb_enum_tables $sitePrefix$DbPrefix;
+wpdb_enum_tables $sitePrefix$DbPrefDelim;
 
 if [ 0 -ge ${#DbTables[@]} ]; then
     echo "Usage: wpdb-tables: database tables not found for site prefix - " $sitePrefix;

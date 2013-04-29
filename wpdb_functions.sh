@@ -11,8 +11,7 @@
 # Database table name prefix delimiter 
 #-- Note: A delimiter is appended by these scripts for convenience.
 #         (By convention, the author uses an underscore delimiter.)
-#DbPrefix="";
-DbPrefix="_";
+DbPrefDelim="_";
 
 function wpdb_credentials {
     #------------------------------------------------------------------

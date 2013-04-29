@@ -1,32 +1,31 @@
 #!/bin/bash
 #
-# wp-protect - Set permissions to protect Wordpress site files
+# wp-protect - Set attributes & permissions to protect Wordpress site files
+#              (i.e., disable updates to core/plugins/themes)
 #
 # Author: Murray J. Brown <mjb@mjbrown.com>
 # License: GPLv2
 #
 
 # Set wordpress directory
-if ( -d "./public_html" )l then 
-    wpdir=$HOME/public_html
-elif [ "" == "$1" ]; then
-    wpdir=".";
-else
+wpdir=$HOME/public_html
+if [ "" != "$1" ]; then
     wpdir="$1";
 fi
 
 # Set user/group read & search permissions on all files
 chmod -R ug=rX,o=rX $wpdir
 
-# Disable user/group write perms in all but selected directories
-find $wpdir \
-    -path $wpdir/wp-content/blogs.dir -prune -o \
-    -path $wpdir/wp-content/cache -prune -o \
-    -path $wpdir/wp-content/uploads -prune -o \
-    -exec chmod a-w {} \;
-
 # Set user/group write perms in selected directories
 chmod -f -R ug=rwX \
     $wpdir/wp-content/blogs.dir \
     $wpdir/wp-content/cache \
     $wpdir/wp-content/uploads
+
+# Set files in all but selected directories immutable
+find $wpdir \
+    -path $wpdir/wp-content/blogs.dir -prune -o \
+    -path $wpdir/wp-content/cache -prune -o \
+    -path $wpdir/wp-content/uploads -prune -o \
+    -exec chattr +i {} \;
+

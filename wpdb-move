@@ -31,14 +31,14 @@ if [ "" == "$2" ]; then
     echo "Usage: wpdb-move <db-name> <old-site-prefix> <new-site-prefix>";
     exit 1;
 fi
-oldPrefix="$2$DbPrefix";
+oldPrefix="$2$DbPrefDelim";
  
 #-- new site prefix
 if [ "" == "$3" ]; then
     echo "Usage: wpdb-move <db-name> <old-site-prefix> <new-site-prefix>";
     exit 1;
 fi
-newPrefix="$3$DbPrefix";
+newPrefix="$3$DbPrefDelim";
  
 # Get database authentication info
 wpdb_credentials $DbName;

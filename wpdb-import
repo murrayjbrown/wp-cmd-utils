@@ -2,11 +2,14 @@
 #
 # wpdb-import - Wordpress database import tool
 #
-# Synopsis: wpdb-import <db-name> <site-prefix>
+# Synopsis: wpdb-import <db-name> <site-prefix> <export-time>
 #
-# Input:  stdin  - MySQL user information
+#	<export-time> format: YYYY-mmdd-HHMM
+#
+# Example: wdpb-import wpdev </root/wpdp_backup/witstone_2013-0424-1017.sql
+#
+# Input:  stdin  - MySQL user information (prompted)
 #                - database SQL table dump file
-#                  named <site-prefix>.sql
 # Output: MySQL  - database content
 #
 # Note: MySQL database is presumed to exist already;
@@ -26,22 +29,41 @@ source wpdb_functions.sh
 #
 #-- database name
 if [ "" == "$1" ]; then
-    echo "Usage: wpdb-import <db-name> <site-prefix>";
+    echo "Usage: wpdb-import <db-name> <site-prefix> <export-time>";
     exit 1;
 fi
 DbName="$1";
 #-- database dump file to import
 if [ "" == "$2" ]; then
-    echo "Usage: wpdb-import <db-name> <site-prefix>";
+    echo "Usage: wpdb-import <db-name> <site-prefix> <export-time>";
     exit 1;
 fi
-sitePrefix="$2$DbPrefix";
+sitePrefix="$2";
+#-- export time of database dump file to import
+if [ "" == "$3" ]; then
+    echo "Usage: wpdb-import <db-name> <site-prefix> <export-time>";
+    exit 1;
+fi
+dumpTime="$3";
 
 # Get database authentication info
 wpdb_credentials $DbName;
-
 #
-# Import MySQL database dumpfile into named database
+# Query site-unique table
 #
-/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <$sitePrefix.sql
+tableName=$sitePrefix$DbPrefDelim"sitemeta"
+#
+echo "Existing sites prefixed '$sitePrefix' in '$DbName' database:"
+echo "show tables;" | /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName | grep "$tableName" | cut --delim="$DbPrefDelim" --fields="1"
 
+# Prompt user for confirmation
+echo "";
+read  -p "Confirm site import: [yes/NO]: " answer; 
+echo "";
+answer=`echo "$answer" | /usr/bin/tr [A-Z] [a-z]`
+if [ "yes" == "$answer" ]; then
+	#
+	# Import MySQL database dumpfile into named database
+	#
+	echo "/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <$sitePrefix_$dumpTime.sql"
+fi
