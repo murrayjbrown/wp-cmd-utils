@@ -45,6 +45,8 @@ if [ "" == "$3" ]; then
     exit 1;
 fi
 dumpTime="$3";
+dumpFile="$sitePrefix";
+dumpFile+="_$dumpTime.sql";
 
 # Get database authentication info
 wpdb_credentials $DbName;
@@ -65,5 +67,5 @@ if [ "yes" == "$answer" ]; then
 	#
 	# Import MySQL database dumpfile into named database
 	#
-	echo "/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <$sitePrefix_$dumpTime.sql"
+	/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName < $dumpFile;
 fi
