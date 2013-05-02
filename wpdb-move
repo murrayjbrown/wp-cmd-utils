@@ -73,7 +73,7 @@ done;
 #
 # Update metadata to refer to new site name
 #
-query_newmeta="UPDATE $oldTablePrefix";
+query_newmeta="UPDATE $newTablePrefix";
 query_newmeta+="usermeta SET meta_key = REPLACE(meta_key, '$oldTablePrefix', '$newTablePrefix');";
 
 /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query_newmeta;
