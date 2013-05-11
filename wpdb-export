@@ -21,7 +21,7 @@ source wpdb_functions.sh
 dumpTime=`/bin/date "+%Y-%m%d-%H%M"`;
 
 #
-# Parse options
+# Parse parameters
 #
 #-- database name
 if [ "" == "$1" ]; then

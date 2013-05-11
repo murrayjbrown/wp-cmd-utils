@@ -25,7 +25,7 @@ DbName=
 WpSite=
 
 #
-# Parse options
+# Parse parameters
 #
 #-- database name
 if [ "" == "$1" ]; then

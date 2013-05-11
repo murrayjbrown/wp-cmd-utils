@@ -17,7 +17,7 @@
 source wpdb_functions.sh
 
 #
-# Parse options
+# Parse parameters
 #
 #-- database name
 if [ "" == "$1" ]; then

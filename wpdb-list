@@ -2,11 +2,15 @@
 #
 # wpdb-churl - List Wordpress sites in database
 #
-# Synopsis: wpdb-list <db-name> [<site-prefix>]
+# Synopsis: wpdb-list [-ah] <db-name> [<site-prefix>]
 #
 # Input:  stdin  - MySQL user information
 #                - database content
 # Output: stdout - site prefixes
+#
+# Options:
+#	-a	List all tables for given site(s)
+#	-h	Print help
 #
 # Author: Murray J. Brown <mjb@mjbrown.com>
 # License: GPLv2
@@ -16,7 +20,32 @@
 source wpdb_functions.sh
 
 #
+# No parameters
+#
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-list <db-name>";
+    exit 1;
+fi
+
+#
 # Parse options
+#
+optAll=false;
+if [ "-" == ${1:0:1} ]; then
+	case "$1" in
+		-a)
+			optAll=true;
+			;;
+		*)
+			echo "Usage: wpdb-list <db-name>";
+			exit 1;
+			;;
+	esac
+	shift;
+fi
+
+#
+# Parse parameters
 #
 #-- database name
 if [ "" == "$1" ]; then
@@ -24,16 +53,24 @@ if [ "" == "$1" ]; then
     exit 1;
 fi
 DbName="$1";
+
 sitePrefix="";
 if [ "" != "$2" ]; then
 	sitePrefix="$2";
 fi
+
 # Get database authentication info
 wpdb_credentials $DbName;
 
 #
 # Query site-unique table
 #
-tableName=$sitePrefix$DbPrefDelim"sitemeta"
-#
-echo "show tables;" | /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName | grep "$tableName" | cut --delim="$DbPrefDelim" --fields="1"
+tableName=$sitePrefix$DbPrefDelim;
+if [ true != $optAll ]; then
+	tableName+="sitemeta";
+	# Query database and show matching sites
+	echo "show tables;" | /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName | grep "$tableName" | cut --delim="$DbPrefDelim" --fields="1"
+else
+	# Query database and show matching site tables
+	echo "show tables;" | /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName | grep "$tableName" 
+fi
