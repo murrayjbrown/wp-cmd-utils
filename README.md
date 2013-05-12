@@ -24,11 +24,10 @@ the administration of Wordpress databases and site document files
 - wpdb-export         - Export Wordpress site tables into SQL dump file
 - wpdb_functions.sh   - Common utility functions used by scripts
 - wpdb-import         - Import Wordpress site tables from SQL dump file
-- wpdb-list           - List Wordpress site prefixes (table sets) in database
+- wpdb-list           - List Wordpress site prefixes (optionally tables) in database
 - wpdb-move           - Rename Wordpress site (table prefix) in database
 - wpdb-replace        - Full-text search & replace in database site tables
 - wpdb_replace.php    - Utility functions called by wpdb-replace script
-- wpdb-tables         - List all tables for a Wordpress site in database
 - wpdb-urls           - List/edit HOME & SITEURL fields wor Wordpress site
 - wp-protect          - Set protective attributes & permissions on Wordpress files
 - wp-unprotect        - Unset protective attributes & permissions on Wordpress files
