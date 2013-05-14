@@ -2,15 +2,15 @@
 #
 # wpdb-churl - List Wordpress sites in database
 #
-# Synopsis: wpdb-list [-ah] <db-name> [<site-prefix>]
+# Synopsis: wpdb-list [-ah --all --help] <db-name> [<site-prefix>]
 #
 # Input:  stdin  - MySQL user information
 #                - database content
 # Output: stdout - site prefixes
 #
 # Options:
-#	-a	List all tables for given site(s)
-#	-h	Print help
+#	-a|--all	List all tables for given site(s)
+#	-h|--help	Print help
 #
 # Author: Murray J. Brown <mjb@mjbrown.com>
 # License: GPLv2
@@ -33,7 +33,7 @@ fi
 optAll=false;
 if [ "-" == ${1:0:1} ]; then
 	case "$1" in
-		-a)
+		-a|--all)
 			optAll=true;
 			;;
 		*)
