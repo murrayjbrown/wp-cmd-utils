@@ -13,6 +13,7 @@
  *        environment variables (per wpdb-replace shell script)
  *              $DbName - database name
  *              $DbTabs - database table names (space-separated list)
+ *              $DbExcl - database table column names to exclude (space-separated list)
  *              $dbUser - database user
  *              $DbPass - database password
  * InOut:  MySQL  - database content
@@ -87,11 +88,12 @@ $char = 'utf8';
 $host = 'localhost';
 $dbnm = getenv('DbName');
 $tabs = getenv('DbTabs');
+$excl = getenv('DbExcl');
 $user = getenv('DbUser');
 $pass = getenv('DbPass');
 
 // Excluded columns - excepted from search/replace operation
-$exclude_cols = array( 'guid' );
+$exclude_cols = array( $excl );
 
 // Get substitution strings
 if ( 3 > $argc ) { // command orig-string replacement-string

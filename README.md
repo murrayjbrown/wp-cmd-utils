@@ -14,6 +14,19 @@ the administration of Wordpress databases and site document files
 # License
 
 * GNU Public License Version 2.0 (GPLv2)
+	
+	This is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    It is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Contents:
 
@@ -26,9 +39,15 @@ the administration of Wordpress databases and site document files
 - wpdb-import         - Import Wordpress site tables from SQL dump file
 - wpdb-list           - List Wordpress site prefixes (optionally tables) in database
 - wpdb-move           - Rename Wordpress site (table prefix) in database
-- wpdb-replace        - Full-text search & replace in database site tables
-- wpdb_replace.php    - Utility functions called by wpdb-replace script
 - wpdb-urls           - List/edit HOME & SITEURL fields wor Wordpress site
 - wp-protect          - Set protective attributes & permissions on Wordpress files
 - wp-unprotect        - Unset protective attributes & permissions on Wordpress files
  
+## Warning notice:
+
+The wpdb-replace tool is not working properly so it should not be used.
+It is retained here for reference purposes only. I welcome any patches.
+
+- wpdb-replace        - Full-text search & replace in database site tables
+- wpdb_replace.php    - Utility functions called by wpdb-replace script
+

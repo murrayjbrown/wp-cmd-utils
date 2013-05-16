@@ -4,8 +4,10 @@
 #
 # Synopsis: wpdb-replace <db-name> <site-prefix> <original-string> <replacement-string>
 #
-# Input:  stdin  - MySQL user information
-# InOut:  MySQL  - database content
+# Input:  stdin	- MySQL user information
+# InOut:  MySQL	- database content
+# Options:
+#		--guid	Include GUID columns in search/replace (default: no)
 #
 # Note: Underscore delimiter appended to prefixes.
 #
@@ -17,40 +19,60 @@
 source wpdb_functions.sh
 
 #
+# No parameters
+#
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-replace [--guid] <db-name> <site-prefix> <original-string> <replacement-string>";
+    exit 1;
+fi
+
+#
+# Parse options
+#
+exclGuid="guid";
+if [ "-" == ${1:0:1} ]; then
+	case "$1" in
+		--guid)
+			exclGuid=;
+			;;
+		*)
+			echo "Usage: wpdb-replace [--guid] <db-name> <site-prefix> <original-string> <replacement-string>";
+			exit 1;
+			;;
+	esac
+	shift;
+fi
+
+#
 # Parse parameters
 #
 #-- database name
 if [ "" == "$1" ]; then
-    echo "Usage: wpdb-replace <db-name> <site-prefix> <original-string> <replacement-string>";
+	echo "Usage: wpdb-replace [--guid] <db-name> <site-prefix> <original-string> <replacement-string>";
     exit 1;
 fi
 DbName="$1";
 
 #-- site prefix
 if [ "" == "$2" ]; then
-    echo "Usage: wpdb-replace <db-name> <site-prefix> <original-string> <replacement-string>";
+	echo "Usage: wpdb-replace [--guid] <db-name> <site-prefix> <original-string> <replacement-string>";
     exit 1;
 fi
 sitePrefix="$2";
  
 #-- search string
 if [ "" == "$3" ]; then
-    echo "Usage: wpdb-replace <db-name> <site-prefix> <original-string> <replacement-string>";
+	echo "Usage: wpdb-replace [--guid] <db-name> <site-prefix> <original-string> <replacement-string>";
     exit 1;
 fi
 origString="$3";
  
 #-- replacement string
 if [ "" == "$4" ]; then
-    echo "Usage: wpdb-replace <db-name> <site-prefix> <original-string> <replacement-string>";
+	echo "Usage: wpdb-replace [--guid] <db-name> <site-prefix> <original-string> <replacement-string>";
     exit 1;
 fi
 replString="$4";
- 
-#echo "dbname: $DbName"
-#echo "prefix: $sitePrefix"
-#echo "search: $origString"
-#echo "replace: $replString"
 
 # Get database authentication info
 wpdb_credentials $DbName;
@@ -77,6 +99,7 @@ if [ "yes" == "$answer" ]; then
 	export DbUser
 	export DbPass
 	export DbTabs=${DbTables[@]}
+	export DbExcl=$exclGuid
 
 	#
 	# Invoke PHP script for string substitution
