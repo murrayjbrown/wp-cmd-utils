@@ -67,7 +67,7 @@ wpdb_credentials $DbName;
 #
 tableName=$sitePrefix$DbPrefDelim;
 if [ true != $optAll ]; then
-	tableName+="sitemeta";
+	tableName+="options";
 	# Query database and show matching sites
 	echo "show tables;" | /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName | grep "$tableName" | cut --delim="$DbPrefDelim" --fields="1"
 else
