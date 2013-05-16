@@ -55,7 +55,7 @@ wpdb_credentials $DbName;
 #
 tableName=$sitePrefix$DbPrefDelim"sitemeta"
 #
-echo "Existing sites prefixed '$sitePrefix' in '$DbName' database:"
+echo "List of existing sites prefixed '$sitePrefix' in '$DbName' database:"
 echo "show tables;" | /usr/bin/mysql --user=$DbUser --password=$DbPass $DbName | grep "$tableName" | cut --delim="$DbPrefDelim" --fields="1"
 
 # Prompt user for confirmation
