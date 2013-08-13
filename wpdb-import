@@ -18,7 +18,9 @@
 #       otherwise a fatal error will be generated.
 #
 # Author: Murray J. Brown <mjb@mjbrown.com>
-# License: GPLv2
+#
+# License: GPLv2 -- see license.txt file.
+# WARNING: USE AT YOUR OWN RISK.
 #
 
 # include utility functions

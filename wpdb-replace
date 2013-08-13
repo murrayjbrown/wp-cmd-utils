@@ -37,6 +37,7 @@
 # Author: Murray J. Brown <mjb@mjbrown.com>
 # 
 # License: GPLv2 -- see license.txt file.
+# WARNING: USE AT YOUR OWN RISK.
 #
 # Version 1.0
 # - Revised per changes to PHP script: wp_replace.php (ver. 1.0)

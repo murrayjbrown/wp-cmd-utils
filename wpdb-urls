@@ -13,7 +13,9 @@
 #		The [home] URL defaults to be same as for [siteurl]:
 #
 # Author: Murray J. Brown <mjb@mjbrown.com>
-# License: GPLv2
+#
+# License: GPLv2 -- see license.txt file.
+# WARNING: USE AT YOUR OWN RISK.
 #
 
 # include utility functions

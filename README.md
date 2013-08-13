@@ -47,7 +47,10 @@ the administration of Wordpress databases and site document files
  
 # Notes
 
-An earlier version of wpdb-replace tool, which had been previously deprecated,
-has been re-written based on code adapted from an enhanced version of tools at
-https://github.com/interconnectit/Search-Replace-DB.git dated 2013-07-18.
+- An earlier version of wpdb-replace tool, which had been previously deprecated,
+  has been re-written based on code adapted from an enhanced version of tools at
+  https://github.com/interconnectit/Search-Replace-DB.git dated 2013-07-18.
+
+- WARNING: USE AT YOUR OWN RISK. (See license.txt)
+  For safety, it is advisable to back-up your data.
 

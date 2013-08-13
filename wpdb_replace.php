@@ -33,6 +33,7 @@
  * Author: Murray J. Brown <mjb@mjbrown.com>
  * 
  * License: GPLv2 -- see license.txt file.
+ * WARNING: USE AT YOUR OWN RISK.
  *
  * Version 1.0
  * - Adapted from enhanced version of command-line tool at

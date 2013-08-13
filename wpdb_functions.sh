@@ -5,7 +5,9 @@
 # Assumes MySQL database
 #
 # Author: Murray J. Brown <mjb@mjbrown.com>
-# License: GPLv2
+#
+# License: GPLv2 -- see license.txt file.
+# WARNING: USE AT YOUR OWN RISK.
 #
 
 # Database table name prefix delimiter 

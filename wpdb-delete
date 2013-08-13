@@ -10,7 +10,9 @@
 # Note: An underscore ('_') delimiter is appended to site prefix.
 #
 # Author: Murray J. Brown <mjb@mjbrown.com>
-# License: GPLv2
+#
+# License: GPLv2 -- see license.txt file.
+# WARNING: USE AT YOUR OWN RISK.
 #
 
 # include utility functions
