@@ -1,0 +1,144 @@
+#!/bin/bash
+#
+# wpdb-replace - replace string in database tables for Wordpress site
+#
+# Synopsis: 
+#
+#        wpdb-replace [-n|--dry-run] [--guid] <db-name> <site-prefix> <original-string> <replacement-string>
+#
+# 
+#  Input: 
+# 
+#        Command-line arguments:
+#           <db-name>               - Wordpress database name
+#           <site-prefix>           - Wordpress site table prefix
+#                                     (underscore delimiter will be appended)
+#           <original-string>       - search string: target to be replaced
+#           <replacement-string>    - replacement string value
+#
+#         Options:
+#            -n|--dry-run           Dry-run; no replacement operation performed.
+#            --guid                 Include GUID columns in search/replace operation
+#                                   (GUID columns excluded by default)
+#         
+#  Output:
+#
+#       Environment variables set by bash script:
+#             $DbName - database name
+#             $DbUser - database user
+#             $DbPass - user password
+#             $DbTbls - table names (space-separated list)
+# 
+#  In-Out:
+# 
+#         MySQL database: indicated Wordpress site tables
+#
+#
+# Author: Murray J. Brown <mjb@mjbrown.com>
+# 
+# License: GPLv2 -- see license.txt file.
+#
+# Version 1.0
+# - Revised per changes to PHP script: wp_replace.php (ver. 1.0)
+#
+# Version 0.x - Initial (unnumbered) version
+# - Deprecated upon discovery that it or, rather, its companion
+#   PHP script (wpdb_replace.php) corrupts the database. (Oops.)
+#
+
+
+# include utility functions
+source wpdb_functions.sh
+
+#
+# No parameters
+#
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-replace [-n|--dry-run] [--guid] <db-name> <site-prefix> <search-string> <replacement-string>";
+    exit 1;
+fi
+
+#
+# Parse options
+#
+dry_run="";
+guid="";
+while [ "-" == ${1:0:1} ]; do
+	case "$1" in
+		-n|--dry-run)
+			opt_dry_run="--dry-run";
+			;;
+		--guid)
+			opt_guid="-g";
+			;;
+		*)
+			echo "Usage: wpdb-replace [-n|--dry-run] [--guid] <db-name> <site-prefix> <search-string> <replacement-string>";
+			exit 1;
+			;;
+	esac
+	shift;
+done;
+
+#
+# Parse parameters
+#
+#-- database name
+if [ "" == "$1" ]; then
+	echo "Usage: wpdb-replace [-n|--dry-run] [--guid] <db-name> <site-prefix> <search-string> <replacement-string>";
+    exit 1;
+fi
+DbName="$1";
+
+#-- site prefix
+if [ "" == "$2" ]; then
+	echo "Usage: wpdb-replace [-n|--dry-run] [--guid] <db-name> <site-prefix> <search-string> <replacement-string>";
+    exit 1;
+fi
+sitePrefix="$2";
+ 
+#-- search string
+if [ "" == "$3" ]; then
+	echo "Usage: wpdb-replace [-n|--dry-run] [--guid] <db-name> <site-prefix> <search-string> <replacement-string>";
+    exit 1;
+fi
+origString="$3";
+ 
+#-- replacement string
+if [ "" == "$4" ]; then
+	echo "Usage: wpdb-replace [-n|--dry-run] [--guid] <db-name> <site-prefix> <search-string> <replacement-string>";
+    exit 1;
+fi
+replString="$4";
+
+# Get database authentication info
+wpdb_credentials $DbName;
+
+# Enumerate tables for site
+unset DbTables;
+wpdb_enum_tables $sitePrefix$DbPrefDelim;
+
+if [ 0 -ge ${#DbTables[@]} ]; then
+    echo "Usage: wpdb-replace: database tables not found for site prefix - " $sitePrefix;
+    exit 1;
+fi
+
+#
+# Export environment variables
+#
+export DbName
+export DbUser
+export DbPass
+export DbTbls=${DbTables[@]}
+
+#
+# Invoke PHP script for string substitution
+#
+wpdb_replace.php $opt_dry_run $opt_guid -s $origString -r $replString
+
+#
+# Unset exported environment variables
+#
+unset DbName
+unset DbUser
+unset DbPass
+unset DbTbls

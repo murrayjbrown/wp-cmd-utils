@@ -39,18 +39,15 @@ the administration of Wordpress databases and site document files
 - wpdb-import         - Import Wordpress site tables from SQL dump file
 - wpdb-list           - List Wordpress site prefixes (optionally tables) in database
 - wpdb-move           - Rename Wordpress site (table prefix) in database
+- wpdb-replace        - Full-text search & replace in database site tables
+- wpdb_replace.php    - Utility functions called by wpdb-replace script
 - wpdb-urls           - List/edit HOME & SITEURL fields wor Wordpress site
 - wp-protect          - Set protective attributes & permissions on Wordpress files
 - wp-unprotect        - Unset protective attributes & permissions on Wordpress files
  
-## Warning: Deprecated tools
+# Notes
 
-The wpdb-replace tool is not working properly so it should not be used.
-It is retained here for reference purposes only. I welcome any patches.
-
-- wpdb-replace        - Full-text search & replace in database site tables
-- wpdb_replace.php    - Utility functions called by wpdb-replace script
-
-It was originally derived from an early version of the code for Interconnectit's
-Search-Replace-DB tool. See http://github.com/interconnectit/Search-Replace-DB
+An earlier version of wpdb-replace tool, which had been previously deprecated,
+has been re-written based on code adapted from an enhanced version of tools at
+https://github.com/interconnectit/Search-Replace-DB.git dated 2013-07-18.
 
