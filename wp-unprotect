@@ -16,6 +16,7 @@ if [ "" != "$1" ]; then
 fi
 
 # Set all files mutable
+chattr -i $wpdir/../wp-*.php;
 find $wpdir \
     -exec chattr -i {} \;
 
