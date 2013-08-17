@@ -22,4 +22,7 @@ find $wpdir \
 # Set user write permissions on all files
 chmod -R u=rwX,go=rX $wpdir
 
+# Set permissive file ownership
+chown www-data:www-data $wpdir/../wp-*
+chown -R www-data:www-data $wpdir
 

@@ -16,7 +16,7 @@ if [ "" != "$1" ]; then
 fi
 
 # Set user/group read & search permissions on all files
-chmod -R ug=rX,o=rX $wpdir
+chmod -R ug=rX,o=rX $wpdir $wpdir/../wp-*
 
 # Set user/group write perms in selected directories
 chmod -f -R ug=rwX \
@@ -25,6 +25,7 @@ chmod -f -R ug=rwX \
     $wpdir/wp-content/uploads
 
 # Set files in all but selected directories immutable
+chattr +i $wpdir/../wp-*
 find $wpdir \
     -path $wpdir/wp-content/blogs.dir -prune -o \
     -path $wpdir/wp-content/cache -prune -o \
