@@ -86,5 +86,5 @@ query_newmeta+="usermeta SET meta_key = REPLACE(meta_key, '$oldTablePrefix', '$n
 query_newoptions="UPDATE $newTablePrefix";
 query_newoptions+="options SET option_name = REPLACE(option_name, '$oldTablePrefix', '$newTablePrefix');";
 
-/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query_newmeta;
+/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query_newoptions;
 
