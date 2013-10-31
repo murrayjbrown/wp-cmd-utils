@@ -11,6 +11,10 @@ the administration of Wordpress databases and site document files
 
 * murrayjbrown - Murray J. Brown <mjb@mjbrown.com>
 
+# Contributor(s)
+
+* boreal321 - Victor Granic <vmg@boreal321.com>
+
 # License
 
 * GNU Public License Version 2.0 (GPLv2)
@@ -36,12 +40,13 @@ the administration of Wordpress databases and site document files
 - wpdb-delete         - Delete Wordpress site tables from database
 - wpdb-export         - Export Wordpress site tables into SQL dump file
 - wpdb_functions.sh   - Common utility functions used by scripts
+- wpdb-https          - Show/Set options for Wordpress-HTTPS plugin
 - wpdb-import         - Import Wordpress site tables from SQL dump file
 - wpdb-list           - List Wordpress site prefixes (optionally tables) in database
 - wpdb-move           - Rename Wordpress site (table prefix) in database
 - wpdb-replace        - Full-text search & replace in database site tables
 - wpdb_replace.php    - Utility functions called by wpdb-replace script
-- wpdb-urls           - List/edit HOME & SITEURL fields wor Wordpress site
+- wpdb-urls           - Show/Set HOME & SITEURL fields wor Wordpress site
 - wp-protect          - Set protective attributes & permissions on Wordpress files
 - wp-unprotect        - Unset protective attributes & permissions on Wordpress files
  

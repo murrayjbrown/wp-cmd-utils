@@ -1,0 +1,103 @@
+#!/bin/bash
+#
+# wpdb-https - Show/Set selected configuration options for Wordpress-HTTPS plugin
+#
+# Synopsis: wpdb-urls <db_name> <site_prefix> [<fqdn> [<port>]]
+#
+# Input:  stdin  - MySQL user information
+#                - database table dump file
+# Output: MySQL  - database content
+#
+# Author: Murray J. Brown <mjb@mjbrown.com>
+#
+# License: GPLv2 -- see license.txt file.
+# WARNING: USE AT YOUR OWN RISK.
+#
+
+# include utility functions
+source wpdb_functions.sh
+
+# Database & site parameters
+DbUser=root
+DbPass=
+DbName=
+WpSite=
+
+# Defined values for Wordpress-HTTPS plugin options
+HTTPS_DEBUG=0
+HTTPS_EXCLUSIVE_HTTPS=1
+HTTPS_REMOVE_UNSECURE=0
+HTTPS_SSL_ADMIN=1
+HTTPS_SSL_HOST=
+HTTPS_SSL_HOST_DIFF=1
+HTTPS_SSL_HOST_SUBDOMAIN=0
+HTTPS_SSL_PORT=443
+HTTPS_SSL_PROXY=1
+
+#
+# Parse parameters
+#
+#-- database name
+if [ "" == "$1" ]; then
+    echo "Usage: wpdb-urls <db_name> <site_prefix> [<fqdn> [<port>]]";
+    exit 1;
+fi
+DbName="$1";
+
+#-- site prefix
+if [ "" == "$2" ]; then
+    echo "Usage: wpdb-urls <db_name> <site_prefix> [<fqdn> [<port>]]";
+    exit 1;
+fi
+sitePrefix="$2$DbPrefDelim";
+
+# Get database authentication info
+wpdb_credentials $DbName;
+dbTable=$DbName'.'$sitePrefix'options';
+
+#-- site url 
+if [ "" == "$3" ]; then
+    #
+    # Prepare MySQL query to show Wordpress-HTTPS plugin options for site
+    #
+	query=""
+	query+="SELECT option_name,option_value FROM witstone_options WHERE option_name = 'wordpress-https_debug';"
+	query+="SELECT option_name,option_value FROM witstone_options WHERE option_name = 'wordpress-https_exclusive_https';"
+	query+="SELECT option_name,option_value FROM witstone_options WHERE option_name = 'wordpress-https_remove_unsecure';"
+	query+="SELECT option_name,option_value FROM witstone_options WHERE option_name = 'wordpress-https_ssl_admin';"
+	query+="SELECT option_name,option_value FROM witstone_options WHERE option_name = 'wordpress-https_ssl_host';"
+	query+="SELECT option_name,option_value FROM witstone_options WHERE option_name = 'wordpress-https_ssl_host_diff';"
+	query+="SELECT option_name,option_value FROM witstone_options WHERE option_name = 'wordpress-https_ssl_host_subdomain';"
+	query+="SELECT option_name,option_value FROM witstone_options WHERE option_name = 'wordpress-https_ssl_port';"
+	query+="SELECT option_name,option_value FROM witstone_options WHERE option_name = 'wordpress-https_ssl_proxy';"
+else
+    #
+    # Prepare MySQL query to update Wordpress-HTTPS plugin options for site
+    #
+	fqdn=$3
+	if [ "" == "$4" ]; then
+		https_ssl_port="$HTTPS_SSL_PORT"
+		https_ssl_host="https://"
+	   	https_ssl_host+=`wpdb_url_host $fqdn`
+		https_ssl_host+="/"
+	else
+		https_ssl_port="$4"
+		https_ssl_host="https://"
+	   	https_ssl_host+=`wpdb_url_host $fqdn`
+		https_ssl_host+=":$https_ssl_port/"
+	fi
+	query=""
+	query+="UPDATE witstone_options SET option_value ='$HTTPS_DEBUG' WHERE option_name = 'wordpress-https_debug';"
+	query+="UPDATE witstone_options SET option_value ='$HTTPS_EXCLUSIVE_HTTPS' WHERE option_name = 'wordpress-https_exclusive_https';"
+	query+="UPDATE witstone_options SET option_value ='$HTTPS_REMOVE_UNSECURE' WHERE option_name = 'wordpress-https_remove_unsecure';"
+	query+="UPDATE witstone_options SET option_value ='$HTTPS_SSL_ADMIN' WHERE option_name = 'wordpress-https_ssl_admin';"
+	query+="UPDATE witstone_options SET option_value ='$https_ssl_host' WHERE option_name = 'wordpress-https_ssl_host';"
+	query+="UPDATE witstone_options SET option_value ='$HTTPS_SSL_HOST_DIFF' WHERE option_name = 'wordpress-https_ssl_host_diff';"
+	query+="UPDATE witstone_options SET option_value ='$HTTPS_SSL_HOST_SUBDOMAIN' WHERE option_name = 'wordpress-https_ssl_host_subdomain';"
+	query+="UPDATE witstone_options SET option_value ='$https_ssl_port' WHERE option_name = 'wordpress-https_ssl_port';"
+	query+="UPDATE witstone_options SET option_value ='$HTTPS_SSL_PROXY' WHERE option_name = 'wordpress-https_ssl_proxy';"
+fi
+
+# Invoke MySQL query
+/usr/bin/mysql --user=$DbUser --password=$DbPass $DbName <<<$query;
+

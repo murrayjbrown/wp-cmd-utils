@@ -80,3 +80,36 @@ function wpdb_enum_tables {
     rm $tfile;
 }
 
+function wpdb_url_host() { 
+    #------------------------------------------------------------------
+    # Synopsis: wpdb_url_host <url>
+    #
+    # Purpose:  Extract host part of given url
+    # Params:   URL
+    # Output:   host
+    #------------------------------------------------------------------
+	url=$1
+	# Strip https scheme
+	if [[ 8 -lt ${#url} && 'https://' = ${url:0:8} ]]; then
+		url=${url:8}
+	fi
+	# Strip http scheme
+	if [[ 7 -lt ${#url} && 'http://' = ${url:0:7} ]]; then
+		url=${url:7}
+	fi
+	# Strip path info
+	i=`expr index $url /`
+	if [[ 0 -lt $i ]]; then
+		url=${url:0:$i-1}
+	fi
+	# Strip port info
+	i=`expr index $url :`
+	if [[ 0 -lt $i ]]; then
+		host=${url:0:$i-1}
+	else
+		host=${url}
+	fi
+	# return host
+	echo $host
+}
+
