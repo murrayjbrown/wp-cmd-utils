@@ -26,7 +26,8 @@ function wpdb_credentials {
     #------------------------------------------------------------------
     # initialize output variables with default values
     DbName=
-    DbUser=root
+    #DbUser=root
+    DbUser=admin
     DbPass=
     #
     # Parse options

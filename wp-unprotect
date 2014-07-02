@@ -10,14 +10,18 @@
 #
 
 # Set wordpress directory
-wpdir=$HOME/public_html
+#wpdir=$HOME/public_html
+wpdir=./wp-root
 if [ "" != "$1" ]; then
     wpdir="$1";
 fi
 
-# Set all files mutable
-chattr -i $wpdir/../wp-*.php;
+# Set files in all but selected directories mutable
+chattr -i $wpdir/../wp-*
 find $wpdir \
+    -path $wpdir/wp-content/blogs.dir -prune -o \
+    -path $wpdir/wp-content/cache -prune -o \
+    -path $wpdir/wp-content/uploads -prune -o \
     -exec chattr -i {} \;
 
 # Set user write permissions on all files

@@ -21,10 +21,19 @@
 # include utility functions
 source wpdb_functions.sh
 
-DbUser=root
+DbUser=
 DbPass=
 DbName=
 WpSite=
+
+#
+### Utility functions
+#
+function url {
+	u=$1
+	if [ (7 -lt ${#u}) && ('http://' = ${u:0:6}) ]
+	
+}
 
 #
 # Parse parameters
@@ -47,20 +56,20 @@ sitePrefix="$2$DbPrefDelim";
 wpdb_credentials $DbName;
 dbTable=$DbName'.'$sitePrefix'options';
 
+
 #-- site url 
 if [ "" == "$3" ]; then
     #
     # Query site URLs in database
     #
     echo -n "siteurl ";
-    /usr/bin/mysql --user=$DbUser --password=$DbPass <<EOF_QUERY_SITEURL
-SELECT option_value FROM $dbTable WHERE option_name = 'siteurl';
-EOF_QUERY_SITEURL
+
+	query="SELECT option_value FROM $dbTable WHERE option_name = 'siteurl';"
+    /usr/bin/mysql --user=$DbUser --password=$DbPass <<<$query
     echo "";
     echo -n "home ";
-    /usr/bin/mysql --user=$DbUser --password=$DbPass <<EOF_QUERY_HOME
-SELECT option_value FROM $dbTable WHERE option_name = 'home';
-EOF_QUERY_HOME
+	query="SELECT option_value FROM $dbTable WHERE option_name = 'home';"
+    /usr/bin/mysql --user=$DbUser --password=$DbPass <<<$query
 
 else
     #
@@ -73,9 +82,8 @@ else
         homeUrl="$4";
     fi
     #
-    /usr/bin/mysql --user=$DbUser --password=$DbPass <<EOF_UPDATE_OPTIONS
-UPDATE $dbTable SET option_value = '$siteUrl' WHERE option_name = 'siteurl';
-UPDATE $dbTable SET option_value = '$homeUrl' WHERE option_name = 'home';
-EOF_UPDATE_OPTIONS
-
+	query=""
+	query+="UPDATE $dbTable SET option_value = '$siteUrl' WHERE option_name = 'siteurl';"
+	query+="UPDATE $dbTable SET option_value = '$homeUrl' WHERE option_name = 'home';"
+    /usr/bin/mysql --user=$DbUser --password=$DbPass <<<$query
 fi
